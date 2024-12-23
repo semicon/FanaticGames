@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Reveal Game</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f0f0f0;
+}
+
+.container {
+    margin: 20px;
+}
+
+.puzzle-grid {
+    display: grid;
+    /* gap: 2px; */
+    margin: 20px auto;
+    width: 500px;
+    height: 500px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.puzzle-piece {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255);
+    border: 1px solid #000;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+.answer-section {
+    margin-top: 20px;
+}
+
+.score-section {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>เกมแฟนพันธุ์แท้</h1>
+        <div class="puzzle-grid" id="puzzle-grid"></div>
+        <div class="controls">
+            <label for="grid-size">Grid Size:</label>
+            <select id="grid-size">
+                <option value="3">3x3</option>
+                <option value="4">4x4</option>
+                <option value="5">5x5</option>
+                <option value="6">6x6</option>
+                <option value="9">9x9</option>
+            </select>
+            <button id="start-button">Start</button>
+        </div>
+        <p id="hint"></p>
+        <div class="answer-section">
+            <label for="answer">Answer:</label>
+            <input type="text" id="answer" placeholder="Enter your answer">
+            <button id="submit-button">Submit</button>
+        </div>
+        <div class="score-section">
+            <p>Score: <span id="score">0</span></p>
+        </div>
+    </div>
+    <script>
+const resources = [
+    { img: 'https://static.thairath.co.th/media/dFQROr7oWzulq5FZX9zsi7MqIhWEJc78sd7ZHDrMVkwEZ9tHyHLDqfjh0TZpfJD9hPP.jpg', name: 'นกแก้ว', hint: 'สัตว์สวยงามปากเป็นจะงอย' },
+    { img: 'https://www.matichon.co.th/wp-content/uploads/2024/04/434978796_759619599684409_3196107541395675332_n.jpg', name: 'เสื่อโคร่ง', hint: 'สัตว์ตะกูลแมวที่มีขนาดใหญ่สุด'},
+    { img: 'https://www.igreenstory.co/wp-content/uploads/2022/05/shutterstock_640299643-e1652087570339.jpg', name: 'เพนกวิน', hint: 'ลำตัวมีสีขาวและดำ'}
+    // เพิ่มภาพและชื่อเพิ่มเติมตามต้องการ
+];
+
+let currentImage;
+let clickCount = 0;
+let score = 0;
+
+document.getElementById('start-button').addEventListener('click', startGame);
+document.getElementById('submit-button').addEventListener('click', checkAnswer);
+
+function startGame() {
+    const gridSize = parseInt(document.getElementById('grid-size').value);
+    const puzzleGrid = document.getElementById('puzzle-grid');
+    puzzleGrid.innerHTML = '';
+    puzzleGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+    puzzleGrid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+
+    currentImage = resources[Math.floor(Math.random() * resources.length)];
+    puzzleGrid.style.backgroundImage = `url(${currentImage.img})`;
+    const totalPieces = gridSize * gridSize;
+    document.getElementById('hint').textContent = currentImage.hint
+
+    for (let i = 0; i < totalPieces; i++) {
+        const piece = document.createElement('div');
+        piece.classList.add('puzzle-piece');
+        piece.textContent = i+1;
+
+        piece.addEventListener('click', () => {
+            clickCount++;
+            piece.style.backgroundColor = 'transparent';
+            piece.style.border = 'none';
+            piece.style.cursor = 'default';
+            piece.textContent = "";
+        });
+
+        puzzleGrid.appendChild(piece);
+    }
+
+    // รีเซ็ตคะแนนและจำนวนคลิก
+    clickCount = 0;
+    score = 0;
+    document.getElementById('score').textContent = score;
+}
+
+function checkAnswer() {
+    const userAnswer = document.getElementById('answer').value.trim();
+    if (userAnswer.toLowerCase() === currentImage.name.toLowerCase()) {
+        if (clickCount <= 5) {
+            score = 1000 - (clickCount * 100);
+        } else if (clickCount <= 10) {
+            score = 300;
+        } else {
+            score = 100;
+        }
+    } else {
+        alert("ไม่ถูกต้อง")
+        score = 0;
+    }
+    document.getElementById('score').textContent = score;
+}
+
+    </script>
+</body>
+</html>
